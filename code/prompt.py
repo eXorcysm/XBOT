@@ -12,7 +12,7 @@ import sys
 
 sys.path.append("../")
 
-PROMPT = "./data/characters/xbot/character.txt"
+PROMPT = "./data/character.txt"
 
 ### Module functions ###
 
@@ -73,10 +73,10 @@ def build_user_persona(card, bot = None, usr = None):
     return persona.strip()
 
 if __name__ == "__main__":
-    prompt, example, first_msg = build_system_prompt(bot = "XBOT", usr = "USER")
+    sys_prompt, ex, msg = build_system_prompt(bot = "XBOT", usr = "USER")
 
-    print(prompt)
+    print(sys_prompt)
     print("\n----------\n")
-    print(example)
+    print(ex)
     print("\n----------\n")
-    print(first_msg)
+    print(msg)

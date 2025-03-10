@@ -11,7 +11,6 @@ import logging
 import os
 import sys
 
-# from llama_index.core.llms import ChatMessage
 from llama_index.core.llms import MessageRole
 from .engine               import init_chat_engine
 from .engine               import init_chat_settings
@@ -25,9 +24,9 @@ from .memory               import parse_text_nodes
 
 sys.path.append("../")
 
-CHAT_HISTORY = "./data/characters/xbot/chat_history/"
-CHAT_STORE   = "./data/characters/xbot/chat_store.json"
-VECTOR_STORE = "./data/characters/xbot/vector_store/"
+CHAT_HISTORY = "./data/chat_history/"
+CHAT_STORE   = "./data/chat_store.json"
+VECTOR_STORE = "./data/vector_store/"
 
 ### Class definition ###
 
@@ -40,7 +39,6 @@ class XBOT():
         self.ai         = bot_id
         self.chat_store = init_chat_store(CHAT_STORE)
         self.memory     = init_chat_memory(self.chat_store, user_id)
-        self.threshold  = 0.8
         self.user       = user_id
 
         # Initialize XBOT settings.
@@ -63,12 +61,10 @@ class XBOT():
         else:
             self.index = None
 
-        # self.index = None  ### DELETE THIS AFTER TESTING
-
         # Initialize chat engine.
         self.chat_engine = init_chat_engine(bot_id, user_id, self.memory, self.index)
 
-    def chat(self, query, stream = False):
+    def chat(self, query, limit_pct = 0.8, stream = False):
         """
         Send user query to chat engine and collect response.
         """
@@ -77,7 +73,7 @@ class XBOT():
         chat_memory = self.memory.get()
         token_count = self.memory._token_count_for_messages(chat_memory)
 
-        if token_count > self.threshold * self.memory.token_limit:
+        if token_count > limit_pct * self.memory.token_limit:
             self.flush_memory()
 
         if stream:
@@ -86,8 +82,6 @@ class XBOT():
             answer = self.chat_engine.chat(query)
 
         logging.info("[+] Got response from model: %s", answer)
-
-        # self.save_chat(query, answer.response)
 
         # Save message exchange to chat store.
         self.chat_store.persist(persist_path = CHAT_STORE)
@@ -139,7 +133,7 @@ class XBOT():
         else:
             print("\tNo sources from vector store used!\n")
 
-    def flush_memory(self, limit = 0.5):
+    def flush_memory(self, limit_pct = 0.5):
         """
         Free up chat memory buffer.
         """
@@ -149,7 +143,7 @@ class XBOT():
         token_count  = self.memory._token_count_for_messages(chat_memory)
         token_limit  = self.memory.token_limit
 
-        while token_count > limit * token_limit:
+        while token_count > limit_pct * token_limit:
             # Flush oldest chats from memory.
             flush_memory.append(chat_memory.pop(0))
 
@@ -178,19 +172,7 @@ class XBOT():
         output_file  = output_path + "history_"
         output_file += datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt"
 
-        with open(output_file, encoding = "utf-8", mode = "w") as hist:
-            hist.write(messages)
+        with open(output_file, encoding = "utf-8", mode = "w") as buf:
+            buf.write(messages)
 
         return len(messages)
-
-    # def save_chat(self, message, response):
-    #     """
-    #     Save message exchange to chat store.
-    #     """
-
-    #     message  = ChatMessage(content = message, role = "user")
-    #     response = ChatMessage(content = response, role = "assistant")
-
-    #     self.chat_store.add_message(self.user, message)
-    #     self.chat_store.add_message(self.ai, response)
-    #     self.chat_store.persist(persist_path = CHAT_STORE)

@@ -19,6 +19,8 @@ conda activate xbot
 pip install -r requirements.txt
 ```
 
+3. Install and run [Ollama](https://ollama.com/download) as the local LLM server.
+
 ## Usage
 
 Run application from command line:
@@ -27,7 +29,33 @@ Run application from command line:
 python app.py
 ```
 
-## References
+After app initialization is complete, browse to the following URL:
+
+[http://localhost:7860](http://localhost:7860)
+
+The character card, which contains the model prompts, is located in the `data` folder.
+
+### Features
+
+- XBOT is designed to role-play as a loyal companion and helpful assistant.
+- The LLM is a quantized version of [Fimbulvetr](https://huggingface.co/backyardai/Fimbulvetr-11B-v2-GGUF) -- a model fine-tuned for RP and storytelling.
+- The embedding model is a fine-tuned version of [bge-small-en-v1.5](https://huggingface.co/hoangthethief/best_model).
+- XBOT can provide both streaming (default) and batch responses.
+- The RAG pipeline incorporates a [reranker](https://huggingface.co/BAAI/bge-reranker-base).
+
+### Future Improvements
+
+- Enable the user to dynamically perform the following via the UI:
+    - change models
+    - load custom character cards
+    - edit/delete messages
+    - upload avatars
+- Add multimodal capabilities for image and sound processing.
+- Add evaluation system.
+- Add guardrails.
+- Add agentic functions.
+
+### References
 
 - [Building and Deploying a Gradio UI on Hugging Face Spaces](https://academy.towardsai.net/courses/take/beginner-to-advanced-llm-dev/multimedia/59791752-building-and-deploying-a-gradio-ui-on-hugging-face-spaces)
 - [Enabling Conversational Memory in LLMs](https://academy.towardsai.net/courses/take/beginner-to-advanced-llm-dev/multimedia/59791737-enabling-conversational-memory-in-llms)

@@ -16,11 +16,7 @@ from llama_index.core                    import Settings
 from llama_index.core                    import SimpleDirectoryReader
 from llama_index.core                    import StorageContext
 from llama_index.core                    import VectorStoreIndex
-# from llama_index.core                    import load_index_from_storage
-# from llama_index.core.memory             import VectorMemory
 from llama_index.core.memory             import ChatSummaryMemoryBuffer
-# from llama_index.core.node_parser        import SimpleNodeParser
-# from llama_index.core.readers.json       import JSONReader
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.embeddings.huggingface  import HuggingFaceEmbedding
 from llama_index.vector_stores.chroma    import ChromaVectorStore
@@ -31,9 +27,9 @@ from transformers                        import AutoTokenizer
 sys.path.append("../")
 
 CHROMA      = "xbot_chat"
-DATA_DST    = "./data/characters/xbot/vector_store/"
-DATA_SRC    = "./data/characters/xbot/chat_history/"
-EMBED_MODEL = "BAAI/bge-small-en-v1.5"
+DATA_DST    = "./data/vector_store/"
+DATA_SRC    = "./data/chat_history/"
+EMBED_MODEL = "hoangthethief/best_model"
 TOKEN_MODEL = "Sao10K/Fimbulvetr-11B-v2"
 
 Settings.embed_model = HuggingFaceEmbedding(EMBED_MODEL)
@@ -72,7 +68,7 @@ def init_chat_memory(store, user_id):
     chat_memory = ChatSummaryMemoryBuffer.from_defaults(
         chat_store     = store,
         chat_store_key = user_id.lower(),
-        token_limit    = 1024  # 3072
+        token_limit    = 3072
     )
 
     return chat_memory
@@ -86,20 +82,6 @@ def init_chat_store(chat_store):
         return SimpleChatStore.from_persist_path(persist_path = chat_store)
 
     return SimpleChatStore()
-
-# def load_local_index(vector_store):
-#     """
-#     Load index from local storage.
-#     """
-
-#     store = StorageContext.from_defaults(persist_dir = vector_store)
-
-#     if "default" not in store.vector_stores:
-#         store.vector_stores["default"] = vector_store
-
-#     index = load_index_from_storage(show_progress = True, storage_context = store)
-
-#     return index
 
 def load_local_index(vector_store):
     """
@@ -130,46 +112,15 @@ def parse_cmd_args():
         "-d", "--dst", type = str, default = DATA_DST, help = "document destination path"
     )
 
-    # parser.add_argument(
-    #     "-j", "--json", action = "store_true", help = "build/rebuild vector index from JSON files"
-    # )
-
     parser.add_argument(
         "-s", "--src", type = str, default = DATA_SRC, help = "document source path"
     )
-
-    # parser.add_argument(
-    #     "-t", "--text", action = "store_true", help = "build/rebuild vector index from text files"
-    # )
 
     parser.add_argument(
         "-v", "--verbose", action = "store_true", help = "show details of build process"
     )
 
     return parser.parse_args()
-
-# def parse_json_nodes(src = DATA_SRC, verbose = False):
-#     """
-#     Load chat history from store and parse into nodes.
-#     """
-
-#     reader    = JSONReader()
-#     documents = reader.load_data(input_file = src + "store.json")
-
-#     return documents
-
-#     # Parse documents into nodes.
-#     parser = SimpleNodeParser.from_defaults(chunk_overlap = 16, chunk_size = 128)
-#     nodes  = parser.get_nodes_from_documents(documents)
-
-#     # Manually set node identifiers.
-#     for i, node in enumerate(nodes):
-#         node.id_ = "node_" + str(i)
-
-#     if verbose:
-#         print("Total number of nodes:", len(nodes))
-
-#     return nodes
 
 def parse_text_nodes(src = DATA_SRC, verbose = False):
     """
@@ -185,7 +136,7 @@ def parse_text_nodes(src = DATA_SRC, verbose = False):
 
     nodes = documents
 
-    # Manually set node identifiers.
+    # Manually set node identifiers (not compatible with Chroma).
     # for i, node in enumerate(nodes):
     #     node.id_ = "node_" + str(i)
 
@@ -212,13 +163,6 @@ def main():
         os.makedirs(DATA_SRC)
 
     # Prepare data source.
-    nodes = None
-
-    # if args.json:
-    #     nodes = parse_json_nodes(args.src, args.verbose)
-    # elif args.text:
-    #     nodes = parse_text_nodes(args.src, args.verbose)
-
     nodes = parse_text_nodes(args.src, args.verbose)
 
     if nodes:
