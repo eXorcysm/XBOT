@@ -85,7 +85,7 @@ def send_query(query, history, xbot):
     answer = xbot.chat(query, stream = True)
 
     # Print out response nodes for debugging purposes.
-    xbot.display_nodes(answer)
+    # xbot.display_nodes(answer)
 
     # Stream chatbot response.
     tokens = ""

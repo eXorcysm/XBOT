@@ -1,39 +1,25 @@
+---
+app_file    : app.py
+colorFrom   : blue
+colorTo     : indigo
+emoji       : 🤖
+pinned      : false
+sdk         : gradio
+sdk_version : "5.16.0"
+title       : XBOT
+---
+
 # XBOT AI
 
 Named after one of the Three Robots from the *Love, Death & Robots* series, XBOT is a large language model (LLM) chatbot built with retrieval-augmented generation (RAG) enabled. As interaction progresses, XBOT periodically saves chat history and rebuilds her vector database upon restart. As such, her knowledge and awareness of the user will continue to grow with engagement.
 
 **NOTE:** This application is designed for LOCAL deployment only! Future versions will be adapted for cloud hosting.
 
-## Installation
+## Deployment on Hugging Face Space (not recommended)
 
-1. Create new virtual environment:
+1. Create a new Hugging Face Space via the Docker template to run the Ollama server. Upload ollama.sh and Dockerfile, and the space will build automatically.
 
-```bash
-conda create -n xbot python=3.12
-conda activate xbot
-```
-
-2. Install requirements:
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Install and run [Ollama](https://ollama.com/download) as the local LLM server.
-
-## Usage
-
-Run application from command line:
-
-```bash
-python app.py
-```
-
-After app initialization is complete, browse to the following URL:
-
-[http://localhost:7860](http://localhost:7860)
-
-The character card, which contains the model prompts, is located in the `data` folder.
+2. Create a second Hugging Face Space to run XBOT via the Gradio template and connecting to this repo.
 
 ### Features
 

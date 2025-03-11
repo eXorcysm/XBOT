@@ -28,6 +28,7 @@ CHUNK_OVERLAP  = 24
 CHUNK_SIZE     = 512
 EMBED_MODEL    = "hoangthethief/best_model"
 MAX_NEW_TOKENS = 256
+LLM_HOST       = "https://exorcyst-ollama-fimbul.hf.space"
 MODEL_NAME     = "hf.co/backyardai/Fimbulvetr-11B-v2-GGUF:Q6_K"
 RERANK_MODEL   = "BAAI/bge-reranker-base"
 VECTOR_STORE   = "./data/vector_store/"
@@ -89,7 +90,7 @@ def init_chat_settings():
     Settings.chunk_overlap = CHUNK_OVERLAP
     Settings.chunk_size    = CHUNK_SIZE
     Settings.embed_model   = HuggingFaceEmbedding(model_name = EMBED_MODEL)
-    Settings.llm           = Ollama(model = MODEL_NAME, request_timeout = 60.0)
+    Settings.llm           = Ollama(base_url = LLM_HOST, model = MODEL_NAME, request_timeout = 60.0)
     Settings.num_output    = MAX_NEW_TOKENS
 
     # Initialize local environment directories.
